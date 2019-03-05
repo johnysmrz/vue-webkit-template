@@ -4,11 +4,15 @@
 const path = require('path')
 const webpack = require('webpack')
 const { VueLoaderPlugin } = require('vue-loader')
+const MiniCssExtractPlugin = require("mini-css-extract-plugin")
 
 module.exports = {
   mode: 'development',
   entry: {
-    main: ['./src/js/main.js'] // TODO add entrypoint for scss
+    main: [
+      './src/js/main.js',
+      './src/style/main.scss'
+    ]
   },
   output: {
     filename: `./[name].js`,
@@ -16,18 +20,13 @@ module.exports = {
     publicPath: '/dist/'
   },
   resolve: {
-    extensions: ['.js', '.vue'],
+    extensions: ['.js', '.vue', '.scss'],
     alias: {
       vue: 'vue/dist/vue.js'
     }
   },
   module: {
     rules: [
-      // {
-      //   test: /\.(js|vue)$/,
-      //   use: 'eslint-loader',
-      //   enforce: 'pre'
-      // },
       {
         test: /\.vue$/,
         use: 'vue-loader'
@@ -37,12 +36,25 @@ module.exports = {
         use: {
           loader: 'babel-loader'
         }
+      },
+      {
+        test: /\.scss$/,
+        use: [
+          {loader: MiniCssExtractPlugin.loader},
+          {loader: 'css-loader'}, // translates CSS into CommonJS
+          {loader: 'sass-loader'}, // compiles Less to CSS
+        ],
       }
     ]
   },
   plugins: [
     new VueLoaderPlugin(),
-    new webpack.HotModuleReplacementPlugin()
+    new webpack.HotModuleReplacementPlugin(),
+    new MiniCssExtractPlugin({
+      filename: "[name].css",
+      path: path.resolve(__dirname, './dist/'),
+      publicPath: '/dist/'  
+  })
   ],
 
   devServer: {
