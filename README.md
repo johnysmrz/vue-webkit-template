@@ -1,0 +1,1 @@
+My template for vue app using webpack
